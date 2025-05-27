@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge"
 import { HelpCircle, Calculator } from "lucide-react"
 import { CostDrivers } from "@/components/cost-drivers"
 import { EstimationResults } from "@/components/estimation-results"
+import 'katex/dist/katex.min.css'
+import { InlineMath, BlockMath } from 'react-katex'
 
 export default function Cocomo81Page() {
   const [projectType, setProjectType] = useState("")
@@ -140,32 +142,58 @@ export default function Cocomo81Page() {
               </div>
 
               {projectType && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-medium text-blue-900 mb-2">
+                <div className="bg-blue-50 p-6 rounded-lg space-y-4">
+                  <h3 className="font-medium text-blue-900 mb-4">
                     Ecuaciones COCOMO-81 - {projectTypes.find((t) => t.value === projectType)?.label}
                   </h3>
-                  <div className="space-y-1 text-sm text-blue-800">
+                  <div className="space-y-4 text-blue-800">
                     {projectType === "organic" && (
                       <>
-                        <p>Esfuerzo (MM) = 3.2 × (KLOC)^1.05 × EAF</p>
-                        <p>Tiempo (TDEV) = 2.5 × (MM)^0.38</p>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Esfuerzo:</p>
+                          <BlockMath math="MM = 3.2 \times (KLOC)^{1.05} \times EAF" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Tiempo:</p>
+                          <BlockMath math="TDEV = 2.5 \times (MM)^{0.38}" />
+                        </div>
                       </>
                     )}
                     {projectType === "semidetached" && (
                       <>
-                        <p>Esfuerzo (MM) = 3.0 × (KLOC)^1.12 × EAF</p>
-                        <p>Tiempo (TDEV) = 2.5 × (MM)^0.35</p>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Esfuerzo:</p>
+                          <BlockMath math="MM = 3.0 \times (KLOC)^{1.12} \times EAF" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Tiempo:</p>
+                          <BlockMath math="TDEV = 2.5 \times (MM)^{0.35}" />
+                        </div>
                       </>
                     )}
                     {projectType === "embedded" && (
                       <>
-                        <p>Esfuerzo (MM) = 2.8 × (KLOC)^1.20 × EAF</p>
-                        <p>Tiempo (TDEV) = 2.5 × (MM)^0.32</p>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Esfuerzo:</p>
+                          <BlockMath math="MM = 2.8 \times (KLOC)^{1.20} \times EAF" />
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm font-medium">Ecuación de Tiempo:</p>
+                          <BlockMath math="TDEV = 2.5 \times (MM)^{0.32}" />
+                        </div>
                       </>
                     )}
-                    <p className="text-xs mt-2">
-                      EAF = Factor de Ajuste del Esfuerzo (producto de conductores de costo)
-                    </p>
+                    <div className="pt-2 border-t border-blue-200">
+                      <p className="text-sm">
+                        Donde:
+                      </p>
+                      <ul className="text-sm space-y-1 mt-2">
+                        <li><InlineMath math="MM" /> = Esfuerzo en Meses-Hombre</li>
+                        <li><InlineMath math="KLOC" /> = Miles de Líneas de Código</li>
+                        <li><InlineMath math="EAF" /> = Factor de Ajuste del Esfuerzo</li>
+                        <li><InlineMath math="TDEV" /> = Tiempo de Desarrollo en Meses</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               )}

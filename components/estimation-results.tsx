@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { BarChart3, Download, FileText } from "lucide-react"
+import 'katex/dist/katex.min.css'
+import { InlineMath, BlockMath } from 'react-katex'
 
 interface EstimationResultsProps {
   model: "cocomo81" | "cocomo2" | "ucp"
@@ -154,24 +156,62 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
           <CardTitle>Ecuaciones Utilizadas</CardTitle>
           <CardDescription>Fórmulas matemáticas aplicadas en la estimación</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
           {model === "cocomo81" && (
-            <div className="space-y-3 font-mono text-sm bg-gray-50 p-4 rounded-lg">
-              <div>Esfuerzo (MM) = a × (KLOC)^b × EAF</div>
-              <div>Tiempo (TDEV) = c × (MM)^d</div>
-              <div>Personas = MM / TDEV</div>
-              <div className="text-xs text-gray-600 mt-2">
-                Donde: a=3.2, b=1.05, c=2.5, d=0.38 para proyectos orgánicos
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
+                  <BlockMath math={`MM = ${data.projectType === "organic" ? "3.2" : data.projectType === "semidetached" ? "3.0" : "2.8"} \\times (${data.kloc})^{${data.projectType === "organic" ? "1.05" : data.projectType === "semidetached" ? "1.12" : "1.20"}} \\times ${results.eaf}`} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
+                  <BlockMath math={`TDEV = 2.5 \\times (${results.effort})^{${data.projectType === "organic" ? "0.38" : data.projectType === "semidetached" ? "0.35" : "0.32"}}`} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Ecuación de Personal:</p>
+                  <BlockMath math={`Personas = \\frac{${results.effort}}{${results.time}} = ${results.people}`} />
+                </div>
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li><InlineMath math="MM" /> = Esfuerzo en Meses-Hombre</li>
+                    <li><InlineMath math="TDEV" /> = Tiempo de Desarrollo en Meses</li>
+                    <li><InlineMath math="EAF" /> = Factor de Ajuste del Esfuerzo</li>
+                    <li><InlineMath math="KLOC" /> = Miles de Líneas de Código</li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}
           {model === "cocomo2" && (
-            <div className="space-y-3 font-mono text-sm bg-gray-50 p-4 rounded-lg">
-              <div>Esfuerzo = A × (Tamaño)^E × ∏EM</div>
-              <div>E = B + 0.01 × ∑SF</div>
-              <div>Tiempo = C × (Esfuerzo)^F</div>
-              <div>F = 0.28 + 0.2 × (E - B)</div>
-              <div className="text-xs text-gray-600 mt-2">Donde: A=2.94, B=0.91, C=3.67</div>
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
+                  <BlockMath math="MM = A \\times (Tamaño)^E \\times \\prod EM" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Exponente de Escala:</p>
+                  <BlockMath math="E = B + 0.01 \\times \\sum SF" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
+                  <BlockMath math="TDEV = C \\times (MM)^F" />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">Factor de Tiempo:</p>
+                  <BlockMath math="F = 0.28 + 0.2 \\times (E - B)" />
+                </div>
+                <div className="pt-4 border-t border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
+                  <ul className="text-sm space-y-1 text-gray-600">
+                    <li><InlineMath math="A = 2.94, B = 0.91, C = 3.67" /></li>
+                    <li><InlineMath math="EM" /> = Multiplicadores de Esfuerzo</li>
+                    <li><InlineMath math="SF" /> = Factores de Escala</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
