@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface CostDriversProps {
   model: "cocomo81" | "cocomo2"
@@ -86,6 +86,11 @@ export function CostDrivers({ model, onDriversChange, initialValues = {} }: Cost
     xh: "Extra Alto",
   }
 
+  const handleDriverChange = (driverId: string, value: string) => {
+    const newDrivers = { ...initialValues, [driverId]: value }
+    onDriversChange(newDrivers)
+  }
+
   return (
     <div className="space-y-6">
       {cocomo81Drivers.map((category) => (
@@ -94,27 +99,43 @@ export function CostDrivers({ model, onDriversChange, initialValues = {} }: Cost
             <CardTitle>Conductores de Costo - {category.category}</CardTitle>
             <CardDescription>Seleccione el nivel apropiado para cada conductor de costo</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {category.drivers.map((driver) => (
-              <div key={driver.id} className="space-y-2">
-                <Label htmlFor={driver.id} className="text-sm font-medium">
-                  {driver.id} - {driver.name}
-                </Label>
-                <Select
-                  value={initialValues[driver.id] || ""}
-                  onValueChange={(value) => onDriversChange({ [driver.id]: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar nivel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(driver.values).map(([key, value]) => (
-                      <SelectItem key={key} value={key}>
-                        {ratingLabels[key as keyof typeof ratingLabels]} ({value})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={driver.id} className="space-y-3 border-b pb-4 last:border-b-0">
+                <div className="space-y-1">
+                  <Label htmlFor={driver.id} className="text-base font-semibold text-gray-900">
+                    {driver.id}
+                  </Label>
+                  <p className="text-sm text-gray-600">{driver.name}</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {Object.entries(driver.values).map(([key, value]) => (
+                    <label
+                      key={key}
+                      htmlFor={`${driver.id}-${key}`}
+                      className={`relative flex items-center space-x-2 rounded-lg border p-3 cursor-pointer transition-colors
+                        ${initialValues[driver.id] === key ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
+                    >
+                      <input
+                        type="radio"
+                        name={driver.id}
+                        id={`${driver.id}-${key}`}
+                        value={key}
+                        checked={initialValues[driver.id] === key}
+                        onChange={() => handleDriverChange(driver.id, key)}
+                        className="peer sr-only"
+                      />
+                      <div className="flex flex-col">
+                        <span className={`text-sm font-medium ${initialValues[driver.id] === key ? 'text-blue-700' : ''}`}>
+                          {ratingLabels[key as keyof typeof ratingLabels]}
+                        </span>
+                        <span className={`text-xs ${initialValues[driver.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
+                          ({value})
+                        </span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
           </CardContent>
