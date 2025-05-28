@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button"
 import { BarChart3, Download, FileText } from "lucide-react"
 import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+import { useRef } from 'react'
 
 interface EstimationResultsProps {
   model: "cocomo81" | "cocomo2" | "ucp"
@@ -13,6 +16,8 @@ interface EstimationResultsProps {
 }
 
 export function EstimationResults({ model, data }: EstimationResultsProps) {
+  const exportRef = useRef<HTMLDivElement>(null)
+
   const calculateCocomo81 = () => {
     const { projectType, kloc, costDrivers, stageCosts } = data;
 
@@ -94,131 +99,165 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
 
   const results = model === "cocomo81" ? calculateCocomo81() : null;
 
+  const handleExportPDF = async () => {
+    if (!exportRef.current) return;
+    const element = exportRef.current;
+    const canvas = await html2canvas(element, { scale: 2 });
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    // Ajustar la imagen al ancho de la página
+    const imgProps = { width: canvas.width, height: canvas.height };
+    const ratio = Math.min(pageWidth / imgProps.width, pageHeight / imgProps.height);
+    const imgWidth = imgProps.width * ratio;
+    const imgHeight = imgProps.height * ratio;
+    pdf.addImage(imgData, 'PNG', (pageWidth - imgWidth) / 2, 20, imgWidth, imgHeight);
+    pdf.save('estimacion-cocomo.pdf');
+  };
+
   if (!results) return null;
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Resultados de la Estimación</CardTitle>
-          <CardDescription>Estimaciones calculadas usando el modelo COCOMO-81</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-medium text-blue-900">Esfuerzo</h3>
-              <p className="text-2xl font-bold text-blue-700">{results.effort}</p>
-              <p className="text-sm text-blue-600">Meses-Hombre</p>
+      <div ref={exportRef}>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Datos del Proyecto</CardTitle>
+            <CardDescription>Características principales utilizadas en la estimación</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {model === "cocomo81" && (
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li><b>Tipo de proyecto:</b> {data.projectType}</li>
+                <li><b>KLOC:</b> {data.kloc}</li>
+                <li><b>Conductores de costo:</b> {Object.entries(data.costDrivers).map(([k, v]) => `${k}: ${v}`).join(', ')}</li>
+                <li><b>Costos por etapa:</b> {Object.entries(data.stageCosts).map(([k, v]) => `${k}: $${v}`).join(', ')}</li>
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Resultados de la Estimación</CardTitle>
+            <CardDescription>Estimaciones calculadas usando el modelo COCOMO-81</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-medium text-blue-900">Esfuerzo</h3>
+                <p className="text-2xl font-bold text-blue-700">{results.effort}</p>
+                <p className="text-sm text-blue-600">Meses-Hombre</p>
+              </div>
+              <div className="p-4 bg-green-50 rounded-lg">
+                <h3 className="font-medium text-green-900">Tiempo</h3>
+                <p className="text-2xl font-bold text-green-700">{results.time}</p>
+                <p className="text-sm text-green-600">Meses</p>
+              </div>
+              <div className="p-4 bg-purple-50 rounded-lg">
+                <h3 className="font-medium text-purple-900">Personal</h3>
+                <p className="text-2xl font-bold text-purple-700">{results.people}</p>
+                <p className="text-sm text-purple-600">Personas</p>
+              </div>
             </div>
-            <div className="p-4 bg-green-50 rounded-lg">
-              <h3 className="font-medium text-green-900">Tiempo</h3>
-              <p className="text-2xl font-bold text-green-700">{results.time}</p>
-              <p className="text-sm text-green-600">Meses</p>
-            </div>
-            <div className="p-4 bg-purple-50 rounded-lg">
-              <h3 className="font-medium text-purple-900">Personal</h3>
-              <p className="text-2xl font-bold text-purple-700">{results.people}</p>
-              <p className="text-sm text-purple-600">Personas</p>
-            </div>
-          </div>
 
-          <div className="space-y-4">
-            <h3 className="font-medium">Desglose de Costos por Etapa</h3>
-            <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(results.costs).map(([stage, cost]) => (
-                <div key={stage} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                  <div>
-                    <span className="capitalize block">{stage}</span>
-                    <span className="text-sm text-gray-500">
-                      {results.stageEfforts[stage]} meses-hombre
-                    </span>
+            <div className="space-y-4">
+              <h3 className="font-medium">Desglose de Costos por Etapa</h3>
+              <div className="grid md:grid-cols-2 gap-4">
+                {Object.entries(results.costs).map(([stage, cost]) => (
+                  <div key={stage} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                    <div>
+                      <span className="capitalize block">{stage}</span>
+                      <span className="text-sm text-gray-500">
+                        {results.stageEfforts[stage]} meses-hombre
+                      </span>
+                    </div>
+                    <Badge variant="secondary">${Math.round(cost)}</Badge>
                   </div>
-                  <Badge variant="secondary">${Math.round(cost)}</Badge>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg mt-4">
-              <span className="font-medium">Costo Total</span>
-              <Badge variant="default" className="text-lg">${results.totalCost}</Badge>
-            </div>
-          </div>
-
-          <div className="p-4 bg-yellow-50 rounded-lg">
-            <h3 className="font-medium text-yellow-900">Factor de Ajuste del Esfuerzo (EAF)</h3>
-            <p className="text-2xl font-bold text-yellow-700">{results.eaf}</p>
-            <p className="text-sm text-yellow-600">Producto de los conductores de costo</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Ecuaciones Utilizadas</CardTitle>
-          <CardDescription>Fórmulas matemáticas aplicadas en la estimación</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {model === "cocomo81" && (
-            <div className="space-y-6">
-              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
-                  <BlockMath math={`MM = ${data.projectType === "organic" ? "3.2" : data.projectType === "semidetached" ? "3.0" : "2.8"} \\times (${data.kloc})^{${data.projectType === "organic" ? "1.05" : data.projectType === "semidetached" ? "1.12" : "1.20"}} \\times ${results.eaf}`} />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
-                  <BlockMath math={`TDEV = 2.5 \\times (${results.effort})^{${data.projectType === "organic" ? "0.38" : data.projectType === "semidetached" ? "0.35" : "0.32"}}`} />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Ecuación de Personal:</p>
-                  <BlockMath math={`Personas = \\frac{${results.effort}}{${results.time}} = ${results.people}`} />
-                </div>
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li><InlineMath math="MM" /> = Esfuerzo en Meses-Hombre</li>
-                    <li><InlineMath math="TDEV" /> = Tiempo de Desarrollo en Meses</li>
-                    <li><InlineMath math="EAF" /> = Factor de Ajuste del Esfuerzo</li>
-                    <li><InlineMath math="KLOC" /> = Miles de Líneas de Código</li>
-                  </ul>
-                </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg mt-4">
+                <span className="font-medium">Costo Total</span>
+                <Badge variant="default" className="text-lg">${results.totalCost}</Badge>
               </div>
             </div>
-          )}
-          {model === "cocomo2" && (
-            <div className="space-y-6">
-              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
-                  <BlockMath math="MM = A \\times (Tamaño)^E \\times \\prod EM" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Exponente de Escala:</p>
-                  <BlockMath math="E = B + 0.01 \\times \\sum SF" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
-                  <BlockMath math="TDEV = C \\times (MM)^F" />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-gray-700">Factor de Tiempo:</p>
-                  <BlockMath math="F = 0.28 + 0.2 \\times (E - B)" />
-                </div>
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
-                  <ul className="text-sm space-y-1 text-gray-600">
-                    <li><InlineMath math="A = 2.94, B = 0.91, C = 3.67" /></li>
-                    <li><InlineMath math="EM" /> = Multiplicadores de Esfuerzo</li>
-                    <li><InlineMath math="SF" /> = Factores de Escala</li>
-                  </ul>
+
+            <div className="p-4 bg-yellow-50 rounded-lg">
+              <h3 className="font-medium text-yellow-900">Factor de Ajuste del Esfuerzo (EAF)</h3>
+              <p className="text-2xl font-bold text-yellow-700">{results.eaf}</p>
+              <p className="text-sm text-yellow-600">Producto de los conductores de costo</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Ecuaciones Utilizadas</CardTitle>
+            <CardDescription>Fórmulas matemáticas aplicadas en la estimación</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {model === "cocomo81" && (
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
+                    <BlockMath math={`MM = ${data.projectType === "organic" ? "3.2" : data.projectType === "semidetached" ? "3.0" : "2.8"} \\times (${data.kloc})^{${data.projectType === "organic" ? "1.05" : data.projectType === "semidetached" ? "1.12" : "1.20"}} \\times ${results.eaf}`} />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
+                    <BlockMath math={`TDEV = 2.5 \\times (${results.effort})^{${data.projectType === "organic" ? "0.38" : data.projectType === "semidetached" ? "0.35" : "0.32"}}`} />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ecuación de Personal:</p>
+                    <BlockMath math={`Personas = \\frac{${results.effort}}{${results.time}} = ${results.people}`} />
+                  </div>
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
+                    <ul className="text-sm space-y-1 text-gray-600">
+                      <li><InlineMath math="MM" /> = Esfuerzo en Meses-Hombre</li>
+                      <li><InlineMath math="TDEV" /> = Tiempo de Desarrollo en Meses</li>
+                      <li><InlineMath math="EAF" /> = Factor de Ajuste del Esfuerzo</li>
+                      <li><InlineMath math="KLOC" /> = Miles de Líneas de Código</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
+            )}
+            {model === "cocomo2" && (
+              <div className="space-y-6">
+                <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ecuación de Esfuerzo:</p>
+                    <BlockMath math="MM = A \\times (Tamaño)^E \\times \\prod EM" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Exponente de Escala:</p>
+                    <BlockMath math="E = B + 0.01 \\times \\sum SF" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Ecuación de Tiempo:</p>
+                    <BlockMath math="TDEV = C \\times (MM)^F" />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Factor de Tiempo:</p>
+                    <BlockMath math="F = 0.28 + 0.2 \\times (E - B)" />
+                  </div>
+                  <div className="pt-4 border-t border-gray-200">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Donde:</p>
+                    <ul className="text-sm space-y-1 text-gray-600">
+                      <li><InlineMath math="A = 2.94, B = 0.91, C = 3.67" /></li>
+                      <li><InlineMath math="EM" /> = Multiplicadores de Esfuerzo</li>
+                      <li><InlineMath math="SF" /> = Factores de Escala</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
       <div className="flex gap-4">
-        <Button className="flex items-center gap-2">
+        <Button className="flex items-center gap-2" onClick={handleExportPDF}>
           <Download className="w-4 h-4" />
           Exportar PDF
         </Button>
