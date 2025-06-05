@@ -15,6 +15,7 @@ import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
 
 export default function Cocomo81Page() {
+  const [projectName, setProjectName] = useState("")
   const [projectType, setProjectType] = useState("")
   const [kloc, setKloc] = useState("")
   const [costDrivers, setCostDrivers] = useState({})
@@ -38,8 +39,8 @@ export default function Cocomo81Page() {
   const handleNext = () => {
     // Validar datos según la pestaña actual
     if (currentTab === "basic") {
-      if (!projectType || !kloc) {
-        alert("Por favor, complete los datos básicos del proyecto (Tipo de Proyecto y KLOC)");
+      if (!projectName || !projectType || !kloc) {
+        alert("Por favor, complete todos los datos básicos del proyecto");
         return;
       }
       setCurrentTab("drivers");
@@ -108,6 +109,20 @@ export default function Cocomo81Page() {
               <CardDescription>Ingrese los datos básicos del proyecto para la estimación</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="project-name">Nombre del Proyecto</Label>
+                  <Input
+                    id="project-name"
+                    type="text"
+                    placeholder="Ej: Sistema de Gestión Empresarial"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                  />
+                  <p className="text-sm text-gray-500">Nombre descriptivo para identificar el proyecto</p>
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="project-type">Tipo de Proyecto</Label>
@@ -286,7 +301,7 @@ export default function Cocomo81Page() {
           {showResults ? (
             <EstimationResults
               model="cocomo81"
-              data={{ projectType, kloc, costDrivers, stageCosts }}
+              data={{ projectName, projectType, kloc, costDrivers, stageCosts }}
             />
           ) : (
             <Card>

@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button"
 import { BarChart3, Download, FileText } from "lucide-react"
 import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
-import { useRef } from 'react'
+import { generateCOCOMO81PDF } from '@/utils/pdf-generator'
 
 interface EstimationResultsProps {
   model: "cocomo81" | "cocomo2" | "ucp"
@@ -16,7 +14,6 @@ interface EstimationResultsProps {
 }
 
 export function EstimationResults({ model, data }: EstimationResultsProps) {
-  const exportRef = useRef<HTMLDivElement>(null)
 
   const calculateCocomo81 = () => {
     const { projectType, kloc, costDrivers, stageCosts } = data;
@@ -99,28 +96,16 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
 
   const results = model === "cocomo81" ? calculateCocomo81() : null;
 
-  const handleExportPDF = async () => {
-    if (!exportRef.current) return;
-    const element = exportRef.current;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    // Ajustar la imagen al ancho de la página
-    const imgProps = { width: canvas.width, height: canvas.height };
-    const ratio = Math.min(pageWidth / imgProps.width, pageHeight / imgProps.height);
-    const imgWidth = imgProps.width * ratio;
-    const imgHeight = imgProps.height * ratio;
-    pdf.addImage(imgData, 'PNG', (pageWidth - imgWidth) / 2, 20, imgWidth, imgHeight);
-    pdf.save('estimacion-cocomo.pdf');
+  const handleExportPDF = () => {
+    if (!results) return;
+    generateCOCOMO81PDF(data, results);
   };
 
   if (!results) return null;
 
   return (
     <div className="space-y-6">
-      <div ref={exportRef}>
+      <div>
         <Card className="mb-6">
           <CardHeader>
             <CardTitle>Datos del Proyecto</CardTitle>
@@ -133,6 +118,10 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold text-gray-900">Configuración Básica</h3>
                     <div className="space-y-2">
+                      <div className="flex justify-between items-center p-2 bg-blue-50 rounded">
+                        <span className="font-medium">Nombre del proyecto:</span>
+                        <Badge variant="default" className="max-w-[200px] truncate">{data.projectName || "Sin nombre"}</Badge>
+                      </div>
                       <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
                         <span className="font-medium">Tipo de proyecto:</span>
                         <Badge variant="outline" className="capitalize">
