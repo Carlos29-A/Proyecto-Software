@@ -56,7 +56,7 @@ Una aplicación web moderna para la estimación de proyectos de software utiliza
 
 1. **Clonar el repositorio**
 ```bash
-git clone <url-del-repositorio>
+git clone https://github.com/Carlos29-A/Proyecto-Software.git
 cd Proyecto-Software
 ```
 
@@ -223,5 +223,3 @@ El proyecto está configurado para ser desplegado en plataformas como:
 ---
 
 **📧 Contacto:** Para consultas académicas o técnicas, contactar a través del repositorio del proyecto.
-
-**⭐ Agradecimientos:** A los profesores del curso de Tópicos en Ingeniería de Software por la guía y apoyo durante el desarrollo de este proyecto. 
