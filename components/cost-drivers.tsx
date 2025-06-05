@@ -3,6 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useEffect } from "react"
 
 interface CostDriversProps {
   model: "cocomo81" | "cocomo2"
@@ -86,8 +87,31 @@ export function CostDrivers({ model, onDriversChange, initialValues = {} }: Cost
     xh: "Extra Alto",
   }
 
+  // Crear valores por defecto con todos los conductores en "nominal"
+  const getDefaultValues = () => {
+    const defaults: Record<string, string> = {}
+    cocomo81Drivers.forEach(category => {
+      category.drivers.forEach(driver => {
+        if (driver.values.n !== undefined) {
+          defaults[driver.id] = "n"
+        }
+      })
+    })
+    return defaults
+  }
+
+  // Combinar valores por defecto con valores iniciales
+  const currentValues = { ...getDefaultValues(), ...initialValues }
+
+  // Notificar los valores por defecto al componente padre si no hay valores iniciales
+  useEffect(() => {
+    if (Object.keys(initialValues).length === 0) {
+      onDriversChange(getDefaultValues())
+    }
+  }, [])
+
   const handleDriverChange = (driverId: string, value: string) => {
-    const newDrivers = { ...initialValues, [driverId]: value }
+    const newDrivers = { ...currentValues, [driverId]: value }
     onDriversChange(newDrivers)
   }
 
@@ -114,22 +138,22 @@ export function CostDrivers({ model, onDriversChange, initialValues = {} }: Cost
                       key={key}
                       htmlFor={`${driver.id}-${key}`}
                       className={`relative flex items-center space-x-2 rounded-lg border p-3 cursor-pointer transition-colors
-                        ${initialValues[driver.id] === key ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
+                        ${currentValues[driver.id] === key ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
                     >
                       <input
                         type="radio"
                         name={driver.id}
                         id={`${driver.id}-${key}`}
                         value={key}
-                        checked={initialValues[driver.id] === key}
+                        checked={currentValues[driver.id] === key}
                         onChange={() => handleDriverChange(driver.id, key)}
                         className="peer sr-only"
                       />
                       <div className="flex flex-col">
-                        <span className={`text-sm font-medium ${initialValues[driver.id] === key ? 'text-blue-700' : ''}`}>
+                        <span className={`text-sm font-medium ${currentValues[driver.id] === key ? 'text-blue-700' : ''}`}>
                           {ratingLabels[key as keyof typeof ratingLabels]}
                         </span>
-                        <span className={`text-xs ${initialValues[driver.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
+                        <span className={`text-xs ${currentValues[driver.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
                           ({value})
                         </span>
                       </div>

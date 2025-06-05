@@ -126,14 +126,80 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
             <CardTitle>Datos del Proyecto</CardTitle>
             <CardDescription>Características principales utilizadas en la estimación</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-6">
             {model === "cocomo81" && (
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li><b>Tipo de proyecto:</b> {data.projectType}</li>
-                <li><b>KLOC:</b> {data.kloc}</li>
-                <li><b>Conductores de costo:</b> {Object.entries(data.costDrivers).map(([k, v]) => `${k}: ${v}`).join(', ')}</li>
-                <li><b>Costos por etapa:</b> {Object.entries(data.stageCosts).map(([k, v]) => `${k}: $${v}`).join(', ')}</li>
-              </ul>
+              <>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Configuración Básica</h3>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                        <span className="font-medium">Tipo de proyecto:</span>
+                        <Badge variant="outline" className="capitalize">
+                          {(() => {
+                            const projectTypeLabels = {
+                              organic: "Orgánico",
+                              semidetached: "Semi-acoplado", 
+                              embedded: "Empotrado"
+                            };
+                            return projectTypeLabels[data.projectType as keyof typeof projectTypeLabels] || data.projectType;
+                          })()}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                        <span className="font-medium">KLOC:</span>
+                        <Badge variant="outline">{data.kloc}</Badge>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-gray-900">Costos por Etapa</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {Object.entries(data.stageCosts).map(([stage, cost]) => {
+                        const stageLabels = {
+                          requirements: "Requerimientos",
+                          analysis: "Análisis",
+                          design: "Diseño", 
+                          coding: "Codificación",
+                          testing: "Pruebas",
+                          integration: "Integración"
+                        };
+                        const displayStage = stageLabels[stage as keyof typeof stageLabels] || stage;
+                        return (
+                          <div key={stage} className="flex justify-between items-center p-2 bg-gray-50 rounded text-sm">
+                            <span>{displayStage}:</span>
+                            <span className="font-medium">${String(cost)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-gray-900">Conductores de Costo</h3>
+                  <div className="grid md:grid-cols-4 gap-3">
+                    {Object.entries(data.costDrivers).map(([driver, value]) => {
+                      const ratingLabels = {
+                        vl: "Muy Bajo",
+                        l: "Bajo", 
+                        n: "Nominal",
+                        h: "Alto",
+                        vh: "Muy Alto",
+                        xh: "Extra Alto"
+                      };
+                      const displayValue = ratingLabels[value as keyof typeof ratingLabels] || String(value);
+                      return (
+                        <div key={driver} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                          <span className="font-mono text-sm">{driver}:</span>
+                          <Badge variant="secondary" className="text-xs">{displayValue}</Badge>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
