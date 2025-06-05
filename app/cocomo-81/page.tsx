@@ -369,10 +369,12 @@ export default function Cocomo81Page() {
       </Tabs>
 
       <div className="flex justify-between">
-        <Button variant="outline" className="flex items-center gap-2">
-          <HelpCircle className="w-4 h-4" />
-          Ver Ayuda
-        </Button>
+        <Link href="/help">
+          <Button variant="outline" className="flex items-center gap-2">
+            <HelpCircle className="w-4 h-4" />
+            Ver Ayuda
+          </Button>
+        </Link>
         {currentTab !== "results" && (
           <Button onClick={handleNext} className="flex items-center gap-2">
             <Calculator className="w-4 h-4" />
