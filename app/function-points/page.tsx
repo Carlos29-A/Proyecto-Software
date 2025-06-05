@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Calculator, HelpCircle } from "lucide-react"
+import { Calculator, HelpCircle, Copy, Check } from "lucide-react"
 
 export default function FunctionPointsPage() {
   const [functionTypes, setFunctionTypes] = useState({
@@ -20,6 +20,7 @@ export default function FunctionPointsPage() {
   })
 
   const [language, setLanguage] = useState("")
+  const [copied, setCopied] = useState(false)
 
   const weights = {
     ei: { simple: 3, average: 4, complex: 6 },
@@ -55,12 +56,37 @@ export default function FunctionPointsPage() {
     return ufp * languageConversion[language as keyof typeof languageConversion]
   }
 
+  const copyKLOCToClipboard = async () => {
+    const kloc = (convertToLOC(calculateUFP()) / 1000).toFixed(2)
+    try {
+      await navigator.clipboard.writeText(kloc)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000) // Reset después de 2 segundos
+    } catch (err) {
+      console.error('Error al copiar al portapapeles:', err)
+      // Fallback para navegadores que no soportan clipboard API
+      const textArea = document.createElement('textarea')
+      textArea.value = kloc
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Calculadora de Puntos de Función</h1>
-          <p className="text-gray-600 mt-2">Calcule puntos de función sin ajustar y convierta a líneas de código</p>
+          <p className="text-gray-600 mt-2">
+            Calcule puntos de función sin ajustar y convierta a líneas de código
+          </p>
+          <p className="text-sm text-blue-600 mt-1">
+            💡 Los resultados KLOC pueden copiarse para usar en cualquier modelo de estimación (COCOMO-81, COCOMO II, etc.)
+          </p>
         </div>
         <Badge variant="secondary" className="text-sm">
           Function Points
@@ -231,7 +257,45 @@ export default function FunctionPointsPage() {
                       <div className="text-3xl font-bold text-blue-700">
                         {convertToLOC(calculateUFP()).toLocaleString()}
                       </div>
-                      <div className="text-sm text-blue-600">LOC en {language.toUpperCase()}</div>
+                      <div className="text-sm text-blue-600 mb-3">LOC en {language.toUpperCase()}</div>
+                      <div className="text-sm text-blue-600 mb-3 font-semibold">
+                        KLOC: {(convertToLOC(calculateUFP()) / 1000).toFixed(2)}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm" 
+                          className="flex-1"
+                          onClick={copyKLOCToClipboard}
+                          disabled={copied}
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="w-4 h-4 mr-2" />
+                              ¡Copiado!
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-4 h-4 mr-2" />
+                              Copiar KLOC
+                            </>
+                          )}
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            const kloc = (convertToLOC(calculateUFP()) / 1000).toFixed(2)
+                            const url = `/cocomo-81?kloc=${kloc}&from=fp`
+                            window.open(url, '_blank')
+                          }}
+                          className="flex-shrink-0"
+                        >
+                          <Calculator className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <div className="text-xs text-blue-600 mt-2 text-center">
+                        Copia el valor KLOC para usar en cualquier modelo de estimación
+                      </div>
                     </div>
                   )}
                 </div>

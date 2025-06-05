@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,14 +12,17 @@ import { Badge } from "@/components/ui/badge"
 import { HelpCircle, Calculator } from "lucide-react"
 import { CostDrivers } from "@/components/cost-drivers"
 import { EstimationResults } from "@/components/estimation-results"
+import Link from "next/link"
 import 'katex/dist/katex.min.css'
 import { InlineMath, BlockMath } from 'react-katex'
 
 export default function Cocomo81Page() {
+  const searchParams = useSearchParams()
   const [projectName, setProjectName] = useState("")
   const [projectType, setProjectType] = useState("")
   const [kloc, setKloc] = useState("")
   const [costDrivers, setCostDrivers] = useState({})
+  const [fromFP, setFromFP] = useState(false)
   const [stageCosts, setStageCosts] = useState({
     requirements: "",
     analysis: "",
@@ -29,6 +33,17 @@ export default function Cocomo81Page() {
   })
   const [showResults, setShowResults] = useState(false)
   const [currentTab, setCurrentTab] = useState("basic")
+
+  // Efecto para manejar parámetros de URL
+  useEffect(() => {
+    const klocParam = searchParams.get('kloc')
+    const fromParam = searchParams.get('from')
+    
+    if (klocParam) {
+      setKloc(klocParam)
+      setFromFP(fromParam === 'fp')
+    }
+  }, [searchParams])
 
   const projectTypes = [
     { value: "organic", label: "Orgánico", description: "Proyectos pequeños, equipos experimentados" },
@@ -145,14 +160,45 @@ export default function Cocomo81Page() {
 
                 <div className="space-y-2">
                   <Label htmlFor="kloc">Tamaño del Software (KLOC)</Label>
-                  <Input
-                    id="kloc"
-                    type="number"
-                    placeholder="Ej: 50"
-                    value={kloc}
-                    onChange={(e) => setKloc(e.target.value)}
-                  />
-                  <p className="text-sm text-gray-500">Miles de líneas de código estimadas</p>
+                  <div className="flex gap-2">
+                    <Input
+                      id="kloc"
+                      type="number"
+                      placeholder="Ej: 50"
+                      value={kloc}
+                      onChange={(e) => setKloc(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Link href="/function-points" target="_blank">
+                      <Button type="button" variant="outline" size="sm" className="whitespace-nowrap">
+                        <Calculator className="w-4 h-4 mr-1" />
+                        Calcular FP
+                      </Button>
+                    </Link>
+                  </div>
+                  {fromFP ? (
+                    <div className="flex items-center gap-2 p-2 bg-green-50 border border-green-200 rounded text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-green-700">
+                        Valor calculado desde Puntos de Función ({kloc} KLOC)
+                      </span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setFromFP(false)}
+                        className="ml-auto h-6 px-2 text-xs"
+                      >
+                        ✕
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">
+                      Miles de líneas de código estimadas • 
+                      <span className="text-600 ml-1">
+                        ¿No conoces el tamaño? Calcula puntos de función y copia el valor KLOC
+                      </span>
+                    </p>
+                  )}
                 </div>
               </div>
 
