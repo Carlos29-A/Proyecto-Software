@@ -6,6 +6,7 @@ interface EstimationData {
   kloc: string | number
   costDrivers: Record<string, string>
   stageCosts: Record<string, string | number>
+  stagePercentages?: Record<string, string | number>
 }
 
 interface EstimationResults {
@@ -176,14 +177,31 @@ export function generateCOCOMO81PDF(data: EstimationData, results: EstimationRes
     integration: "Integración"
   }
 
-  const costHeaders = ['Etapa', 'Esfuerzo (MM)', 'Costo ($)']
+  const costHeaders = ['Etapa', 'Porcentaje (%)', 'Esfuerzo (MM)', 'Costo ($)']
   const costRows = Object.entries(results.costs).map(([stage, cost]) => {
     const displayStage = stageLabels[stage as keyof typeof stageLabels] || stage
     const stageEffort = results.stageEfforts[stage]
-    return [displayStage, String(stageEffort), `$${Math.round(cost).toLocaleString()}`]
+    const percentage = data.stagePercentages?.[stage] || '0'
+    return [displayStage, String(percentage), String(stageEffort), `$${Math.round(cost).toLocaleString()}`]
   })
 
   currentY = createTable(costHeaders, costRows, currentY)
+
+  // Información sobre distribución personalizada
+  if (data.stagePercentages) {
+    const totalPercentage = Object.values(data.stagePercentages)
+      .reduce((sum, value) => sum + parseFloat(String(value)), 0)
+    
+    pdf.setFillColor(255, 243, 205) // Fondo amarillo claro
+    pdf.rect(margin, currentY, contentWidth, 15, 'F')
+    
+    pdf.setTextColor(textDark[0], textDark[1], textDark[2])
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Distribución Personalizada:', margin + 3, currentY + 6)
+    pdf.text(`Total de porcentajes: ${totalPercentage.toFixed(1)}%`, margin + 3, currentY + 12)
+    currentY += 20
+  }
 
   // Costo total destacado
   pdf.setFillColor(accentColor[0], accentColor[1], accentColor[2])

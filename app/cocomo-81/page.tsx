@@ -31,6 +31,14 @@ export default function Cocomo81Page() {
     testing: "",
     integration: "",
   })
+  const [stagePercentages, setStagePercentages] = useState({
+    requirements: "8",
+    analysis: "18", 
+    design: "25",
+    coding: "26",
+    testing: "31",
+    integration: "28",
+  })
   const [showResults, setShowResults] = useState(false)
   const [currentTab, setCurrentTab] = useState("basic")
 
@@ -72,6 +80,26 @@ export default function Cocomo81Page() {
         alert(`Por favor, complete los costos para las siguientes etapas: ${missingCosts.join(", ")}`);
         return;
       }
+
+      // Validar que todos los porcentajes estén completos y sean válidos (permite 0%)
+      const invalidPercentages = Object.entries(stagePercentages)
+        .filter(([_, value]) => !value && value !== "0" || parseFloat(value) < 0)
+        .map(([key]) => key);
+
+      if (invalidPercentages.length > 0) {
+        alert(`Por favor, ingrese porcentajes válidos (≥ 0%) para las siguientes etapas: ${invalidPercentages.join(", ")}`);
+        return;
+      }
+
+      // Validar que la suma de porcentajes sea razonable (mínimo 10% para evitar proyectos vacíos)
+      const totalPercentage = Object.values(stagePercentages)
+        .reduce((sum, value) => sum + parseFloat(value), 0);
+
+      if (totalPercentage < 10 || totalPercentage > 300) {
+        alert(`La suma de porcentajes (${totalPercentage.toFixed(1)}%) parece inusual. Se recomienda entre 10% y 300%`);
+        return;
+      }
+
       setCurrentTab("results");
       setShowResults(true);
     }
@@ -273,71 +301,77 @@ export default function Cocomo81Page() {
         <TabsContent value="costs" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Costo Hombre-Mes por Etapas</CardTitle>
-              <CardDescription>Configure el costo por persona-mes para cada etapa del desarrollo</CardDescription>
+              <CardTitle>Configuración de Costos y Distribución por Etapas</CardTitle>
+              <CardDescription>Configure el costo por persona-mes y el porcentaje de distribución del esfuerzo para cada etapa</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="requirements">Requerimientos ($/mes)</Label>
-                  <Input
-                    id="requirements"
-                    type="number"
-                    placeholder="5000"
-                    value={stageCosts.requirements}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, requirements: e.target.value }))}
-                  />
+            <CardContent className="space-y-6">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h4 className="font-medium text-amber-800 mb-2">📊 Distribución del Esfuerzo</h4>
+                <p className="text-sm text-amber-700">
+                  Los porcentajes representan qué parte del esfuerzo total se asigna a cada etapa. 
+                  Puede usar 0% para etapas que no aplican a su proyecto. La suma puede exceder 100% debido a superposición de actividades.
+                </p>
+                <p className="text-xs text-amber-600 mt-1">
+                  <strong>Total actual:</strong> {Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0).toFixed(1)}%
+                </p>
+              </div>
+
+              <div className="grid gap-6">
+                {[
+                  { key: "requirements", label: "Requerimientos", placeholder: "5000" },
+                  { key: "analysis", label: "Análisis", placeholder: "5500" },
+                  { key: "design", label: "Diseño", placeholder: "6000" },
+                  { key: "coding", label: "Codificación", placeholder: "5000" },
+                  { key: "testing", label: "Pruebas", placeholder: "5500" },
+                  { key: "integration", label: "Integración", placeholder: "6000" }
+                ].map(({ key, label, placeholder }) => (
+                  <div key={key} className="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="space-y-2">
+                      <Label htmlFor={`cost-${key}`} className="text-sm font-medium">
+                        {label} - Costo ($/mes-hombre)
+                      </Label>
+                      <Input
+                        id={`cost-${key}`}
+                        type="number"
+                        placeholder={placeholder}
+                        value={stageCosts[key as keyof typeof stageCosts]}
+                        onChange={(e) => setStageCosts((prev) => ({ ...prev, [key]: e.target.value }))}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`percent-${key}`} className="text-sm font-medium">
+                        {label} - Porcentaje del Esfuerzo (%)
+                      </Label>
+                      <Input
+                        id={`percent-${key}`}
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="200"
+                        placeholder="0"
+                        value={stagePercentages[key as keyof typeof stagePercentages]}
+                        onChange={(e) => setStagePercentages((prev) => ({ ...prev, [key]: e.target.value }))}
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">💡 Sugerencias Típicas</h4>
+                <div className="grid md:grid-cols-3 gap-2 text-sm text-blue-700">
+                  <div>• Requerimientos: 0-15%</div>
+                  <div>• Análisis: 0-25%</div>
+                  <div>• Diseño: 10-30%</div>
+                  <div>• Codificación: 15-35%</div>
+                  <div>• Pruebas: 20-40%</div>
+                  <div>• Integración: 15-35%</div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="analysis">Análisis ($/mes)</Label>
-                  <Input
-                    id="analysis"
-                    type="number"
-                    placeholder="5500"
-                    value={stageCosts.analysis}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, analysis: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="design">Diseño ($/mes)</Label>
-                  <Input
-                    id="design"
-                    type="number"
-                    placeholder="6000"
-                    value={stageCosts.design}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, design: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="coding">Codificación ($/mes)</Label>
-                  <Input
-                    id="coding"
-                    type="number"
-                    placeholder="5000"
-                    value={stageCosts.coding}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, coding: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="testing">Pruebas ($/mes)</Label>
-                  <Input
-                    id="testing"
-                    type="number"
-                    placeholder="5500"
-                    value={stageCosts.testing}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, testing: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="integration">Integración ($/mes)</Label>
-                  <Input
-                    id="integration"
-                    type="number"
-                    placeholder="6000"
-                    value={stageCosts.integration}
-                    onChange={(e) => setStageCosts((prev) => ({ ...prev, integration: e.target.value }))}
-                  />
-                </div>
+                <p className="text-xs text-blue-600 mt-2">
+                  Los valores pueden superponerse según la metodología. Use 0% para omitir etapas que no aplican.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -347,7 +381,7 @@ export default function Cocomo81Page() {
           {showResults ? (
             <EstimationResults
               model="cocomo81"
-              data={{ projectName, projectType, kloc, costDrivers, stageCosts }}
+              data={{ projectName, projectType, kloc, costDrivers, stageCosts, stagePercentages }}
             />
           ) : (
             <Card>

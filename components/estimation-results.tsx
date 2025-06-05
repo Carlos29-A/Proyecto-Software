@@ -16,7 +16,7 @@ interface EstimationResultsProps {
 export function EstimationResults({ model, data }: EstimationResultsProps) {
 
   const calculateCocomo81 = () => {
-    const { projectType, kloc, costDrivers, stageCosts } = data;
+    const { projectType, kloc, costDrivers, stageCosts, stagePercentages } = data;
 
     // Constantes según el tipo de proyecto
     const constants = {
@@ -62,18 +62,18 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
     // Calcular número de personas necesarias
     const people = effort / time;
 
-    // Calcular costos por etapa
-    const stagePercentages = {
-      requirements: 0.08,
-      analysis: 0.18,
-      design: 0.25,
-      coding: 0.26,
-      testing: 0.31,
-      integration: 0.28
+    // Usar porcentajes personalizados del usuario
+    const percentages = {
+      requirements: (parseFloat(stagePercentages?.requirements || "8") / 100),
+      analysis: (parseFloat(stagePercentages?.analysis || "18") / 100),
+      design: (parseFloat(stagePercentages?.design || "25") / 100),
+      coding: (parseFloat(stagePercentages?.coding || "26") / 100),
+      testing: (parseFloat(stagePercentages?.testing || "31") / 100),
+      integration: (parseFloat(stagePercentages?.integration || "28") / 100)
     };
 
     const costs = Object.entries(stageCosts).reduce((acc: Record<string, number>, [stage, cost]) => {
-      const stageEffort = effort * stagePercentages[stage as keyof typeof stagePercentages];
+      const stageEffort = effort * percentages[stage as keyof typeof percentages];
       const stageCost = stageEffort * parseFloat(cost as string);
       return { ...acc, [stage]: stageCost };
     }, {});
@@ -87,9 +87,9 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
       costs,
       totalCost: Math.round(totalCost * 100) / 100,
       eaf: Math.round(eaf * 100) / 100,
-      stageEfforts: Object.entries(stagePercentages).reduce((acc: Record<string, number>, [stage, percentage]) => ({
+      stageEfforts: Object.entries(percentages).reduce((acc: Record<string, number>, [stage, percentage]) => ({
         ...acc,
-        [stage]: Math.round(effort * percentage * 100) / 100
+        [stage]: Math.round(effort * (percentage as number) * 100) / 100
       }), {})
     };
   };
