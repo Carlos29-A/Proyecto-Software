@@ -305,73 +305,334 @@ export default function Cocomo81Page() {
               <CardDescription>Configure el costo por persona-mes y el porcentaje de distribución del esfuerzo para cada etapa</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h4 className="font-medium text-amber-800 mb-2">📊 Distribución del Esfuerzo</h4>
-                <p className="text-sm text-amber-700">
-                  Los porcentajes representan qué parte del esfuerzo total se asigna a cada etapa. 
-                  Puede usar 0% para etapas que no aplican a su proyecto. La suma puede exceder 100% debido a superposición de actividades.
-                </p>
-                <p className="text-xs text-amber-600 mt-1">
-                  <strong>Total actual:</strong> {Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0).toFixed(1)}%
-                </p>
-              </div>
-
-              <div className="grid gap-6">
-                {[
-                  { key: "requirements", label: "Requerimientos", placeholder: "5000" },
-                  { key: "analysis", label: "Análisis", placeholder: "5500" },
-                  { key: "design", label: "Diseño", placeholder: "6000" },
-                  { key: "coding", label: "Codificación", placeholder: "5000" },
-                  { key: "testing", label: "Pruebas", placeholder: "5500" },
-                  { key: "integration", label: "Integración", placeholder: "6000" }
-                ].map(({ key, label, placeholder }) => (
-                  <div key={key} className="grid md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="space-y-2">
-                      <Label htmlFor={`cost-${key}`} className="text-sm font-medium">
-                        {label} - Costo ($/mes-hombre)
-                      </Label>
-                      <Input
-                        id={`cost-${key}`}
-                        type="number"
-                        placeholder={placeholder}
-                        value={stageCosts[key as keyof typeof stageCosts]}
-                        onChange={(e) => setStageCosts((prev) => ({ ...prev, [key]: e.target.value }))}
-                        className="bg-white"
-                      />
+              {/* Presets de Configuración Rápida */}
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
+                <h4 className="font-medium text-indigo-800 mb-3 flex items-center gap-2">
+                  Configuración Rápida
+                </h4>
+                <div className="grid md:grid-cols-3 gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setStagePercentages({
+                        requirements: "8",
+                        analysis: "18", 
+                        design: "25",
+                        coding: "26",
+                        testing: "31",
+                        integration: "28"
+                      });
+                      setStageCosts({
+                        requirements: "5000",
+                        analysis: "5500",
+                        design: "6000", 
+                        coding: "5000",
+                        testing: "5500",
+                        integration: "6000"
+                      });
+                    }}
+                    className="text-left h-auto p-3"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">Estándar</div>
+                      <div className="text-xs text-gray-500">Distribución tradicional (136%)</div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`percent-${key}`} className="text-sm font-medium">
-                        {label} - Porcentaje del Esfuerzo (%)
-                      </Label>
-                      <Input
-                        id={`percent-${key}`}
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="200"
-                        placeholder="0"
-                        value={stagePercentages[key as keyof typeof stagePercentages]}
-                        onChange={(e) => setStagePercentages((prev) => ({ ...prev, [key]: e.target.value }))}
-                        className="bg-white"
-                      />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setStagePercentages({
+                        requirements: "15",
+                        analysis: "20", 
+                        design: "25",
+                        coding: "25",
+                        testing: "15",
+                        integration: "0"
+                      });
+                      setStageCosts({
+                        requirements: "4500",
+                        analysis: "5000",
+                        design: "5500", 
+                        coding: "4800",
+                        testing: "5200",
+                        integration: "5000"
+                      });
+                    }}
+                    className="text-left h-auto p-3"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">Ágil</div>
+                      <div className="text-xs text-gray-500">Metodología ágil (100%)</div>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium text-blue-800 mb-2">💡 Sugerencias Típicas</h4>
-                <div className="grid md:grid-cols-3 gap-2 text-sm text-blue-700">
-                  <div>• Requerimientos: 0-15%</div>
-                  <div>• Análisis: 0-25%</div>
-                  <div>• Diseño: 10-30%</div>
-                  <div>• Codificación: 15-35%</div>
-                  <div>• Pruebas: 20-40%</div>
-                  <div>• Integración: 15-35%</div>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setStagePercentages({
+                        requirements: "12",
+                        analysis: "15", 
+                        design: "20",
+                        coding: "30",
+                        testing: "20",
+                        integration: "3"
+                      });
+                      setStageCosts({
+                        requirements: "6000",
+                        analysis: "6500",
+                        design: "7000", 
+                        coding: "5500",
+                        testing: "6000",
+                        integration: "6500"
+                      });
+                    }}
+                    className="text-left h-auto p-3"
+                  >
+                    <div>
+                      <div className="font-medium text-sm">Enterprise</div>
+                      <div className="text-xs text-gray-500">Proyecto corporativo (100%)</div>
+                    </div>
+                  </Button>
                 </div>
-                <p className="text-xs text-blue-600 mt-2">
-                  Los valores pueden superponerse según la metodología. Use 0% para omitir etapas que no aplican.
-                </p>
+              </div>
+
+              {/* Validación y Estado Actual */}
+              <div className={`border rounded-lg p-4 transition-colors ${
+                (() => {
+                  const total = Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0);
+                  if (total < 10) return "bg-red-50 border-red-200";
+                  if (total > 300) return "bg-red-50 border-red-200";
+                  if (total >= 90 && total <= 110) return "bg-green-50 border-green-200";
+                  return "bg-amber-50 border-amber-200";
+                })()
+              }`}>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="font-medium flex items-center gap-2">
+                    Estado de Distribución
+                    {(() => {
+                      const total = Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0);
+                      if (total >= 90 && total <= 110) return <span className="text-green-600">✓</span>;
+                      if (total < 10 || total > 300) return <span className="text-red-600">⚠</span>;
+                      return <span className="text-amber-600">!</span>;
+                    })()}
+                  </h4>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const total = Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0);
+                      if (total === 0) return;
+                      
+                      const factor = 100 / total;
+                      const normalized = Object.entries(stagePercentages).reduce((acc, [key, value]) => ({
+                        ...acc,
+                        [key]: (parseFloat(value || "0") * factor).toFixed(1)
+                      }), {} as typeof stagePercentages);
+                      
+                      setStagePercentages(normalized);
+                    }}
+                    className="h-8 px-3 text-xs"
+                  >
+                    Normalizar a 100%
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Total actual:</span>
+                    <span className="font-medium">
+                      {Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        (() => {
+                          const total = Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0);
+                          if (total >= 90 && total <= 110) return "bg-green-500";
+                          if (total < 10 || total > 300) return "bg-red-500";
+                          return "bg-amber-500";
+                        })()
+                      }`}
+                      style={{ 
+                        width: `${Math.min(100, (Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0) / 200) * 100)}%` 
+                      }}
+                    />
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {(() => {
+                      const total = Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0);
+                      if (total >= 90 && total <= 110) return "✅ Distribución equilibrada";
+                      if (total < 10) return "⚠️ Muy poco esfuerzo asignado";
+                      if (total > 300) return "⚠️ Distribución excesiva";
+                      if (total > 150) return "ℹ️ Incluye superposición de actividades";
+                      return "ℹ️ Revise la distribución";
+                    })()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Configuración de Etapas Mejorada */}
+              <div className="grid gap-4">
+                {[
+                  { 
+                    key: "requirements", 
+                    label: "Requerimientos", 
+                    placeholder: "5000", 
+                    description: "Levantamiento y documentación de requisitos"
+                  },
+                  { 
+                    key: "analysis", 
+                    label: "Análisis", 
+                    placeholder: "5500", 
+                    description: "Análisis de requisitos y modelado del sistema"
+                  },
+                  { 
+                    key: "design", 
+                    label: "Diseño", 
+                    placeholder: "6000", 
+                    description: "Diseño arquitectónico y detallado"
+                  },
+                  { 
+                    key: "coding", 
+                    label: "Codificación", 
+                    placeholder: "5000", 
+                    description: "Implementación y desarrollo del código"
+                  },
+                  { 
+                    key: "testing", 
+                    label: "Pruebas", 
+                    placeholder: "5500", 
+                    description: "Pruebas unitarias, integración y sistema"
+                  },
+                  { 
+                    key: "integration", 
+                    label: "Integración", 
+                    placeholder: "6000", 
+                    description: "Integración y despliegue del sistema"
+                  }
+                ].map(({ key, label, placeholder, description }) => {
+                  const currentPercentage = parseFloat(stagePercentages[key as keyof typeof stagePercentages] || "0");
+                  const currentCost = stageCosts[key as keyof typeof stageCosts];
+                  
+                                     return (
+                     <div key={key} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-all">
+                       <div className="flex items-center gap-3 mb-3">
+                         <div className="flex-1">
+                           <h5 className="font-medium text-gray-900">{label}</h5>
+                           <p className="text-xs text-gray-500">{description}</p>
+                         </div>
+                        <div className="text-right">
+                          <div className="text-sm font-medium text-gray-900">
+                            {currentPercentage}%
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            ${currentCost || "0"}/mes
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor={`cost-${key}`} className="text-sm font-medium text-gray-700">
+                            Costo mensual por persona ($)
+                          </Label>
+                          <Input
+                            id={`cost-${key}`}
+                            type="number"
+                            placeholder={placeholder}
+                            value={currentCost}
+                            onChange={(e) => setStageCosts((prev) => ({ ...prev, [key]: e.target.value }))}
+                            className="bg-white transition-colors focus:border-blue-500"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor={`percent-${key}`} className="text-sm font-medium text-gray-700">
+                            Porcentaje del esfuerzo total (%)
+                          </Label>
+                          <div className="flex gap-2">
+                            <Input
+                              id={`percent-${key}`}
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              max="200"
+                              placeholder="0"
+                              value={stagePercentages[key as keyof typeof stagePercentages]}
+                              onChange={(e) => setStagePercentages((prev) => ({ ...prev, [key]: e.target.value }))}
+                              className="bg-white transition-colors focus:border-blue-500"
+                            />
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const current = parseFloat(stagePercentages[key as keyof typeof stagePercentages] || "0");
+                                  setStagePercentages((prev) => ({ ...prev, [key]: String(Math.max(0, current - 5)) }));
+                                }}
+                                className="h-10 w-10 p-0"
+                              >
+                                -
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const current = parseFloat(stagePercentages[key as keyof typeof stagePercentages] || "0");
+                                  setStagePercentages((prev) => ({ ...prev, [key]: String(Math.min(200, current + 5)) }));
+                                }}
+                                className="h-10 w-10 p-0"
+                              >
+                                +
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Barra de progreso individual */}
+                      <div className="mt-3">
+                        <div className="w-full bg-gray-100 rounded-full h-1">
+                          <div 
+                            className="bg-blue-500 h-1 rounded-full transition-all duration-300"
+                            style={{ width: `${Math.min(100, (currentPercentage / 50) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Información adicional */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">Guía de Rangos Típicos</h4>
+                <div className="grid md:grid-cols-3 gap-4 text-sm text-blue-700">
+                  <div className="space-y-1">
+                    <div className="font-medium">Proyectos Ágiles:</div>
+                    <div>• Requerimientos: 10-15%</div>
+                    <div>• Análisis: 15-20%</div>
+                    <div>• Diseño: 20-25%</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-medium">Proyectos Tradicionales:</div>
+                    <div>• Codificación: 25-35%</div>
+                    <div>• Pruebas: 20-30%</div>
+                    <div>• Integración: 5-15%</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="font-medium">Proyectos Críticos:</div>
+                    <div>• Análisis: 20-30%</div>
+                    <div>• Pruebas: 30-45%</div>
+                    <div>• Total: 120-180%</div>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <p className="text-xs text-blue-600">
+                                         <strong>Tip:</strong> Use 0% para omitir etapas que no aplican. Los totales &gt;100% son normales en proyectos con actividades superpuestas.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
