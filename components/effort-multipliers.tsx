@@ -1,14 +1,16 @@
 "use client"
 
+import { useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface EffortMultipliersProps {
   onMultipliersChange: (multipliers: Record<string, string>) => void
+  initialValues?: Record<string, string>
 }
 
-export function EffortMultipliers({ onMultipliersChange }: EffortMultipliersProps) {
+export function EffortMultipliers({ onMultipliersChange, initialValues = {} }: EffortMultipliersProps) {
   const multiplierCategories = [
     {
       category: "Producto",
@@ -216,6 +218,34 @@ export function EffortMultipliers({ onMultipliersChange }: EffortMultipliersProp
     },
   ]
 
+  // Crear valores por defecto con todos los multiplicadores en "nominal"
+  const getDefaultValues = () => {
+    const defaults: Record<string, string> = {}
+    multiplierCategories.forEach(category => {
+      category.multipliers.forEach(multiplier => {
+        if (multiplier.values.n !== undefined) {
+          defaults[multiplier.id] = "n"
+        }
+      })
+    })
+    return defaults
+  }
+
+  // Combinar valores por defecto con valores iniciales
+  const currentValues = { ...getDefaultValues(), ...initialValues }
+
+  // Notificar los valores por defecto al componente padre si no hay valores iniciales
+  useEffect(() => {
+    if (Object.keys(initialValues).length === 0) {
+      onMultipliersChange(getDefaultValues())
+    }
+  }, [])
+
+  const handleMultiplierChange = (multiplierId: string, value: string) => {
+    const newMultipliers = { ...currentValues, [multiplierId]: value }
+    onMultipliersChange(newMultipliers)
+  }
+
   return (
     <div className="space-y-6">
       {multiplierCategories.map((category) => (
@@ -224,29 +254,45 @@ export function EffortMultipliers({ onMultipliersChange }: EffortMultipliersProp
             <CardTitle>Multiplicadores de Esfuerzo - {category.category}</CardTitle>
             <CardDescription>Seleccione el nivel apropiado para cada multiplicador de esfuerzo</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             {category.multipliers.map((multiplier) => (
-              <div key={multiplier.id} className="space-y-2">
-                <Label className="text-sm font-medium">
-                  {multiplier.id} - {multiplier.name}
-                </Label>
-                <Select onValueChange={(value) => onMultipliersChange({ [multiplier.id]: value })}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar nivel" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(multiplier.values).map(([key, data]) => (
-                      <SelectItem key={key} value={key}>
-                        <div className="flex flex-col">
-                          <span>
-                            {data.label} ({data.value})
-                          </span>
-                          <span className="text-xs text-gray-500">{data.desc}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div key={multiplier.id} className="space-y-3 border-b pb-4 last:border-b-0">
+                <div className="space-y-1">
+                  <Label htmlFor={multiplier.id} className="text-base font-semibold text-gray-900">
+                    {multiplier.id}
+                  </Label>
+                  <p className="text-sm text-gray-600">{multiplier.name}</p>
+                  <p className="text-xs text-gray-500">{multiplier.values.n?.desc || ''}</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                  {Object.entries(multiplier.values).map(([key, data]) => (
+                    <label
+                      key={key}
+                      htmlFor={`${multiplier.id}-${key}`}
+                      className={`relative flex items-center space-x-2 rounded-lg border p-3 cursor-pointer transition-colors
+                        ${currentValues[multiplier.id] === key ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
+                    >
+                      <input
+                        type="radio"
+                        name={multiplier.id}
+                        id={`${multiplier.id}-${key}`}
+                        value={key}
+                        checked={currentValues[multiplier.id] === key}
+                        onChange={() => handleMultiplierChange(multiplier.id, key)}
+                        className="peer sr-only"
+                      />
+                      <div className="flex flex-col">
+                        <span className={`text-sm font-medium ${currentValues[multiplier.id] === key ? 'text-blue-700' : ''}`}>
+                          {data.label}
+                        </span>
+                        <span className={`text-xs ${currentValues[multiplier.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
+                          ({data.value})
+                        </span>
+                        <span className="text-xs text-gray-400">{data.desc}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
               </div>
             ))}
           </CardContent>

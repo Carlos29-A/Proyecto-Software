@@ -10,7 +10,7 @@ import { Menu, Calculator, HelpCircle, Home } from "lucide-react"
 const navigation = [
   { name: "Inicio", href: "/", icon: Home },
   { name: "COCOMO-81", href: "/cocomo-81", icon: Calculator },
-  { name: "COCOMO II", href: "/feature-unavailable", icon: Calculator, disabled: true },
+  { name: "COCOMO II", href: "/cocomo-ii", icon: Calculator},
   { name: "Casos de Uso", href: "/feature-unavailable", icon: Calculator, disabled: true },
   { name: "Puntos de Función", href: "/function-points", icon: Calculator },
   { name: "Ayuda", href: "/help", icon: HelpCircle },

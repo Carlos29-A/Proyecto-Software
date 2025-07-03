@@ -37,22 +37,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow opacity-60 relative">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-green-600" />
               COCOMO II Post-Arquitectura
-              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded ml-auto">
-                Próximamente
-              </span>
             </CardTitle>
             <CardDescription>Modelo avanzado con conductores de escala y factores de esfuerzo</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/feature-unavailable">
-              <Button className="w-full" variant="outline" disabled>
-                No Disponible
-              </Button>
+            <Link href="/cocomo-ii">
+              <Button className="w-full">Iniciar Estimación</Button>
             </Link>
           </CardContent>
         </Card>
@@ -153,8 +148,8 @@ export default function Dashboard() {
                 Integración entre funcionalidades
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <span className="text-gray-500">COCOMO II (próximamente)</span>
+                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                COCOMO II Post-Arquitectura
               </li>
               <li className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-gray-400 rounded-full"></div>

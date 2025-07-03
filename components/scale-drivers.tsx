@@ -1,14 +1,16 @@
 "use client"
 
+import { useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface ScaleDriversProps {
   onDriversChange: (drivers: Record<string, string>) => void
+  initialValues?: Record<string, string>
 }
 
-export function ScaleDrivers({ onDriversChange }: ScaleDriversProps) {
+export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDriversProps) {
   const scaleFactors = [
     {
       id: "PREC",
@@ -72,6 +74,32 @@ export function ScaleDrivers({ onDriversChange }: ScaleDriversProps) {
     },
   ]
 
+  // Crear valores por defecto con todos los factores en "nominal"
+  const getDefaultValues = () => {
+    const defaults: Record<string, string> = {}
+    scaleFactors.forEach(factor => {
+      if (factor.values.n !== undefined) {
+        defaults[factor.id] = "n"
+      }
+    })
+    return defaults
+  }
+
+  // Combinar valores por defecto con valores iniciales
+  const currentValues = { ...getDefaultValues(), ...initialValues }
+
+  // Notificar los valores por defecto al componente padre si no hay valores iniciales
+  useEffect(() => {
+    if (Object.keys(initialValues).length === 0) {
+      onDriversChange(getDefaultValues())
+    }
+  }, [])
+
+  const handleFactorChange = (factorId: string, value: string) => {
+    const newDrivers = { ...currentValues, [factorId]: value }
+    onDriversChange(newDrivers)
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -81,30 +109,43 @@ export function ScaleDrivers({ onDriversChange }: ScaleDriversProps) {
         </CardHeader>
         <CardContent className="space-y-6">
           {scaleFactors.map((factor) => (
-            <div key={factor.id} className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">
-                  {factor.id} - {factor.name}
+            <div key={factor.id} className="space-y-3 border-b pb-4 last:border-b-0">
+              <div className="space-y-1">
+                <Label htmlFor={factor.id} className="text-base font-semibold text-gray-900">
+                  {factor.id}
                 </Label>
-                <p className="text-xs text-gray-500 mt-1">{factor.description}</p>
+                <p className="text-sm text-gray-600">{factor.name}</p>
+                <p className="text-xs text-gray-500">{factor.description}</p>
               </div>
-              <Select onValueChange={(value) => onDriversChange({ [factor.id]: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar nivel" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(factor.values).map(([key, data]) => (
-                    <SelectItem key={key} value={key}>
-                      <div className="flex flex-col">
-                        <span>
-                          {data.label} ({data.value})
-                        </span>
-                        <span className="text-xs text-gray-500">{data.desc}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                {Object.entries(factor.values).map(([key, data]) => (
+                  <label
+                    key={key}
+                    htmlFor={`${factor.id}-${key}`}
+                    className={`relative flex items-center space-x-2 rounded-lg border p-3 cursor-pointer transition-colors
+                      ${currentValues[factor.id] === key ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'}`}
+                  >
+                    <input
+                      type="radio"
+                      name={factor.id}
+                      id={`${factor.id}-${key}`}
+                      value={key}
+                      checked={currentValues[factor.id] === key}
+                      onChange={() => handleFactorChange(factor.id, key)}
+                      className="peer sr-only"
+                    />
+                    <div className="flex flex-col">
+                      <span className={`text-sm font-medium ${currentValues[factor.id] === key ? 'text-blue-700' : ''}`}>
+                        {data.label}
+                      </span>
+                      <span className={`text-xs ${currentValues[factor.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
+                        ({data.value})
+                      </span>
+                      <span className="text-xs text-gray-400">{data.desc}</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
             </div>
           ))}
         </CardContent>
