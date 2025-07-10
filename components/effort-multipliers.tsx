@@ -260,12 +260,12 @@ export function EffortMultipliers({ onMultipliersChange, initialValues = {} }: E
                 <div className="space-y-1">
                   <Label htmlFor={multiplier.id} className="text-base font-semibold text-gray-900">
                     {multiplier.id}
-                  </Label>
+                </Label>
                   <p className="text-sm text-gray-600">{multiplier.name}</p>
                   <p className="text-xs text-gray-500">{multiplier.values.n?.desc || ''}</p>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {Object.entries(multiplier.values).map(([key, data]) => (
+                    {Object.entries(multiplier.values).map(([key, data]) => (
                     <label
                       key={key}
                       htmlFor={`${multiplier.id}-${key}`}
@@ -281,17 +281,17 @@ export function EffortMultipliers({ onMultipliersChange, initialValues = {} }: E
                         onChange={() => handleMultiplierChange(multiplier.id, key)}
                         className="peer sr-only"
                       />
-                      <div className="flex flex-col">
+                        <div className="flex flex-col">
                         <span className={`text-sm font-medium ${currentValues[multiplier.id] === key ? 'text-blue-700' : ''}`}>
                           {data.label}
                         </span>
                         <span className={`text-xs ${currentValues[multiplier.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
                           ({data.value})
-                        </span>
+                          </span>
                         <span className="text-xs text-gray-400">{data.desc}</span>
-                      </div>
+                        </div>
                     </label>
-                  ))}
+                    ))}
                 </div>
               </div>
             ))}

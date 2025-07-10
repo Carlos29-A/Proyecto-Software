@@ -1,6 +1,6 @@
 # 📊 Sistema de Estimación de Software
 
-Una aplicación web moderna para la estimación de proyectos de software utilizando los modelos **COCOMO-81** y **Puntos de Función**, desarrollada como proyecto final para el curso de Tópicos en Ingeniería de Software.
+Una aplicación web moderna para la estimación de proyectos de software utilizando los modelos **COCOMO-81**, **COCOMO II**, **Puntos de Función** y **Puntos de Casos de Uso (UCP)**, desarrollada como proyecto final para el curso de Tópicos en Ingeniería de Software.
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -16,11 +16,24 @@ Una aplicación web moderna para la estimación de proyectos de software utiliza
   - Cálculo de esfuerzo, tiempo y personal necesario
   - Soporte para proyectos orgánicos, semi-acoplados y empotrados
 
+- 🟢 **COCOMO II Post-Arquitectura**
+  - Configuración de conductores de escala y multiplicadores de esfuerzo
+  - Cálculo avanzado de esfuerzo, tiempo y personal
+  - Distribución de costos y esfuerzo por etapas
+  - Exportación de resultados y reportes en PDF profesional
+
 - 📐 **Calculadora de Puntos de Función**
   - Evaluación de 5 tipos de funciones (EI, EO, EQ, ILF, EIF)
   - Clasificación por complejidad (Baja, Media, Alta)
   - Conversión automática a KLOC
   - Integración con COCOMO-81
+
+- 🟣 **Puntos de Casos de Uso (UCP)**
+  - Definición de casos de uso y actores con complejidad
+  - Configuración de factores técnicos y ambientales
+  - Cálculo automático de UCP, TCF, ECF y esfuerzo estimado
+  - Análisis de factores críticos y advertencias de riesgo
+  - Exportación de resultados y reportes en PDF profesional
 
 - 📄 **Exportación de Reportes**
   - Generación de PDFs profesionales
@@ -33,8 +46,7 @@ Una aplicación web moderna para la estimación de proyectos de software utiliza
   - Notificaciones visuales de valores importados
 
 ### 🚧 Características en Desarrollo
-- COCOMO II (próximamente)
-- Puntos de Casos de Uso (próximamente)
+- (Sin características en desarrollo actualmente)
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -99,6 +111,24 @@ http://localhost:3000
    - Desglose detallado por etapas
    - Exportación a PDF profesional
 
+### COCOMO II Post-Arquitectura
+
+1. **Datos Básicos**
+   - Ingrese el nombre del proyecto y el tamaño en KLOC
+
+2. **Conductores de Escala**
+   - Configure los 5 factores de escala (PREC, FLEX, RESL, TEAM, PMAT)
+
+3. **Multiplicadores de Esfuerzo**
+   - Configure los 17 multiplicadores de esfuerzo agrupados por categoría
+
+4. **Costos por Etapa**
+   - Defina el costo y porcentaje de esfuerzo para cada etapa
+
+5. **Resultados**
+   - Visualice esfuerzo, tiempo, personal y costos por etapa
+   - Exportación de resultados y reportes en PDF profesional
+
 ### Puntos de Función
 
 1. **Conteo de Funciones**
@@ -117,13 +147,35 @@ http://localhost:3000
    - Ratios de conversión actualizados
    - Copia directa a COCOMO-81
 
+### Puntos de Casos de Uso (UCP)
+
+1. **Datos Básicos**
+   - Ingrese el nombre y descripción del proyecto
+
+2. **Casos de Uso y Actores**
+   - Agregue casos de uso y defina su complejidad (Simple, Promedio, Complejo)
+   - Agregue actores y defina su complejidad (Simple, Promedio, Complejo)
+
+3. **Factores Técnicos y Ambientales**
+   - Configure los valores de los 13 factores técnicos (T1-T13)
+   - Configure los valores de los 8 factores ambientales (F1-F8)
+   - Todos los valores por defecto en 0
+
+4. **Resultados y Análisis**
+   - Visualice UAW, UUCW, UUCP, TCF, ECF y UCP
+   - Analice los factores críticos y el factor de productividad
+   - Revise advertencias de riesgo si hay demasiados factores críticos
+   - Exportación de resultados y reportes en PDF profesional
+
 ## 📁 Estructura del Proyecto
 
 ```
 Proyecto-Software/
 ├── app/                          # Páginas de la aplicación
 │   ├── cocomo-81/               # Página de COCOMO-81
+│   ├── cocomo-ii/               # Página de COCOMO II Post-Arquitectura
 │   ├── function-points/         # Calculadora de Puntos de Función
+│   ├── use-case-points/         # Calculadora de Puntos de Casos de Uso (UCP)
 │   ├── feature-unavailable/     # Página para funciones no disponibles
 │   └── help/                    # Página de ayuda
 ├── components/                   # Componentes reutilizables
@@ -198,28 +250,4 @@ pnpm build
 # Iniciar servidor de producción
 pnpm start
 
-# Verificación de código
-pnpm lint
-
-# Verificación de tipos
-pnpm type-check
 ```
-
-## 📝 Notas de Implementación
-
-- **Distribución por Etapas:** Los porcentajes se basan en prácticas de la industria y pueden configurarse según la metodología específica del proyecto.
-- **Validaciones:** El sistema incluye validaciones para asegurar datos consistentes y resultados confiables.
-- **Responsive Design:** Interfaz optimizada para dispositivos desktop y móviles.
-- **Accesibilidad:** Implementación de mejores prácticas de accesibilidad web.
-
-## 🚀 Despliegue
-
-El proyecto está configurado para ser desplegado en plataformas como:
-- Vercel (recomendado para Next.js)
-- Netlify
-- Railway
-- Render
-
----
-
-**📧 Contacto:** Para consultas académicas o técnicas, contactar a través del repositorio del proyecto.

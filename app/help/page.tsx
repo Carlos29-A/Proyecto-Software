@@ -616,6 +616,54 @@ export default function HelpPage() {
                   </div>
                 </div>
               </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Cálculo del Esfuerzo</h3>
+                <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Análisis de Factores Ambientales:</p>
+                    <ul className="text-sm space-y-1 text-gray-600 list-disc ml-6">
+                      <li>Se cuentan los factores F1-F6 (E1 a E6) con valor menor a 3</li>
+                      <li>Se cuentan los factores F7-F8 (E7 y E8) con valor mayor a 3</li>
+                    </ul>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Factor de Productividad (PF):</p>
+                    <ul className="text-sm space-y-1 text-gray-600 list-disc ml-6">
+                      <li>Si total de factores ≤ 2: PF = 20 horas/UCP</li>
+                      <li>Si total de factores = 3 o 4: PF = 28 horas/UCP</li>
+                      <li>Si total de factores ≥ 5: Se debe considerar hacer cambios al proyecto</li>
+                    </ul>
+                  </div>
+
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-700">Esfuerzo Total:</p>
+                    <BlockMath math={"Esfuerzo = UCP \\times PF"} />
+                    <p className="text-sm text-gray-600 mt-2">
+                      Donde:
+                    </p>
+                    <ul className="text-sm space-y-1 text-gray-600 list-disc ml-6">
+                      <li>UCP = Puntos de Caso de Uso ajustados</li>
+                      <li>PF = Factor de Productividad (20 o 28 horas/UCP)</li>
+                    </ul>
+                  </div>
+
+                  <div className="bg-yellow-50 p-4 rounded-lg mt-4">
+                    <p className="text-sm font-medium text-yellow-800">Nota Importante:</p>
+                    <p className="text-sm text-yellow-700 mt-1">
+                      Si el total de factores críticos es 5 o más, esto indica un alto riesgo para el proyecto.
+                      Se recomienda revisar y ajustar los siguientes aspectos:
+                    </p>
+                    <ul className="text-sm space-y-1 text-yellow-700 list-disc ml-6 mt-2">
+                      <li>Mejorar la experiencia y capacitación del equipo</li>
+                      <li>Reducir el uso de personal a tiempo parcial</li>
+                      <li>Considerar el uso de lenguajes más familiares</li>
+                      <li>Fortalecer el liderazgo del proyecto</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

@@ -200,7 +200,7 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
   const handleExportPDF = () => {
     if (!results) return;
     if (model === "cocomo81") {
-      generateCOCOMO81PDF(data, results);
+    generateCOCOMO81PDF(data, results);
     } else if (model === "cocomo2") {
       generateCOCOMO2PDF(data, results);
     }
@@ -459,15 +459,15 @@ export function EstimationResults({ model, data }: EstimationResultsProps) {
                   };
                   const displayStage = stageLabels[stage as keyof typeof stageLabels] || stage;
                   return (
-                    <div key={stage} className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                      <div>
+                  <div key={stage} className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                    <div>
                         <span className="block">{displayStage}</span>
-                        <span className="text-sm text-gray-500">
-                          {results.stageEfforts[stage]} meses-hombre
-                        </span>
-                      </div>
-                      <Badge variant="secondary">${Math.round(cost)}</Badge>
+                      <span className="text-sm text-gray-500">
+                        {results.stageEfforts[stage]} meses-hombre
+                      </span>
                     </div>
+                    <Badge variant="secondary">${Math.round(cost)}</Badge>
+                  </div>
                   );
                 })}
               </div>

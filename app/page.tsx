@@ -52,22 +52,17 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow opacity-60 relative">
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="w-5 h-5 text-purple-600" />
               Puntos de Casos de Uso
-              <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded ml-auto">
-                Próximamente
-              </span>
             </CardTitle>
             <CardDescription>Estimación basada en casos de uso con factores de complejidad</CardDescription>
           </CardHeader>
           <CardContent>
-            <Link href="/feature-unavailable">
-              <Button className="w-full" variant="outline" disabled>
-                No Disponible
-              </Button>
+            <Link href="/use-case-points">
+              <Button className="w-full">Calcular Puntos</Button>
             </Link>
           </CardContent>
         </Card>
@@ -152,8 +147,8 @@ export default function Dashboard() {
                 COCOMO II Post-Arquitectura
               </li>
               <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <span className="text-gray-500">Casos de uso (próximamente)</span>
+                <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                Puntos de Casos de Uso
               </li>
             </ul>
           </div>

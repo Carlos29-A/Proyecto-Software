@@ -167,15 +167,15 @@ export default function CocomoIIPage() {
                   />
                   <p className="text-sm text-gray-500">Nombre descriptivo para identificar el proyecto</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="kloc-ii">Tamaño del Software (KLOC)</Label>
+              <div className="space-y-2">
+                <Label htmlFor="kloc-ii">Tamaño del Software (KLOC)</Label>
                   <div className="flex gap-2">
-                    <Input
-                      id="kloc-ii"
-                      type="number"
-                      placeholder="Ej: 100"
-                      value={kloc}
-                      onChange={(e) => setKloc(e.target.value)}
+                <Input
+                  id="kloc-ii"
+                  type="number"
+                  placeholder="Ej: 100"
+                  value={kloc}
+                  onChange={(e) => setKloc(e.target.value)}
                       className="flex-1"
                     />
                     <Link href="/function-points" target="_blank">
@@ -185,9 +185,9 @@ export default function CocomoIIPage() {
                       </Button>
                     </Link>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    Miles de líneas de código estimadas (sin comentarios ni líneas en blanco)
-                  </p>
+                <p className="text-sm text-gray-500">
+                  Miles de líneas de código estimadas (sin comentarios ni líneas en blanco)
+                </p>
                 </div>
               </div>
               <div className="bg-green-50 p-4 rounded-lg mt-4 text-green-900">
@@ -387,7 +387,7 @@ export default function CocomoIIPage() {
                       style={{ 
                         width: `${Math.min(100, (Object.values(stagePercentages).reduce((sum, value) => sum + parseFloat(value || "0"), 0) / 200) * 100)}%` 
                       }}
-                    />
+                  />
                   </div>
                   <div className="text-xs text-gray-600">
                     {(() => {
@@ -463,27 +463,27 @@ export default function CocomoIIPage() {
                       </div>
                       
                       <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                <div className="space-y-2">
                           <Label htmlFor={`cost-${key}`} className="text-sm font-medium text-gray-700">
                             Costo mensual por persona ($)
                           </Label>
-                          <Input
+                  <Input
                             id={`cost-${key}`}
-                            type="number"
+                    type="number"
                             placeholder={placeholder}
                             value={currentCost}
                             onChange={(e) => setStageCosts((prev) => ({ ...prev, [key]: e.target.value }))}
                             className="bg-white transition-colors focus:border-blue-500"
                           />
-                        </div>
-                        <div className="space-y-2">
+                </div>
+                <div className="space-y-2">
                           <Label htmlFor={`percent-${key}`} className="text-sm font-medium text-gray-700">
                             Porcentaje del esfuerzo total (%)
                           </Label>
                           <div className="flex gap-2">
-                            <Input
+                  <Input
                               id={`percent-${key}`}
-                              type="number"
+                    type="number"
                               step="0.1"
                               min="0"
                               max="200"
@@ -526,7 +526,7 @@ export default function CocomoIIPage() {
                           <div 
                             className="bg-blue-500 h-1 rounded-full transition-all duration-300"
                             style={{ width: `${Math.min(100, (currentPercentage / 50) * 100)}%` }}
-                          />
+                  />
                         </div>
                       </div>
                     </div>
@@ -591,16 +591,16 @@ export default function CocomoIIPage() {
 
       <div className="flex justify-between">
         <Link href="/help">
-          <Button variant="outline" className="flex items-center gap-2">
-            <HelpCircle className="w-4 h-4" />
-            Ver Ayuda
-          </Button>
+        <Button variant="outline" className="flex items-center gap-2">
+          <HelpCircle className="w-4 h-4" />
+          Ver Ayuda
+        </Button>
         </Link>
         {currentTab !== "results" && (
           <Button onClick={handleNext} className="flex items-center gap-2">
-            <Calculator className="w-4 h-4" />
+          <Calculator className="w-4 h-4" />
             {getButtonText()}
-          </Button>
+        </Button>
         )}
       </div>
     </div>

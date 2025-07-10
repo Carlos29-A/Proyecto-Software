@@ -5,9 +5,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Rutas bloqueadas para la presentación del proyecto final
-  const blockedRoutes = [
+  const blockedRoutes: string[] = [
     // '/cocomo-ii', // Desbloqueado para acceso
-    '/use-case-points'
+    // '/use-case-points' // Desbloqueado para acceso
   ]
 
   // Si la ruta está bloqueada, redirigir a la página de funcionalidad no disponible
@@ -21,6 +21,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // '/cocomo-ii/:path*', // Desbloqueado para acceso
-    '/use-case-points/:path*'
+    // '/use-case-points/:path*' // Desbloqueado para acceso
   ]
 } 

@@ -17,11 +17,11 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
       name: "Precedencia",
       description: "Familiaridad con proyectos similares",
       values: {
-        vh: { label: "Muy Alto", value: 6.2, desc: "Completamente familiar" },
-        h: { label: "Alto", value: 4.96, desc: "Mayormente familiar" },
-        n: { label: "Nominal", value: 3.72, desc: "Algo familiar" },
-        l: { label: "Bajo", value: 2.48, desc: "Poco familiar" },
-        vl: { label: "Muy Bajo", value: 1.24, desc: "Sin familiaridad" },
+        vh: { label: "Muy Alto", value: 6.2},
+        h: { label: "Alto", value: 4.96},
+        n: { label: "Nominal", value: 3.72},
+        l: { label: "Bajo", value: 2.48},
+        vl: { label: "Muy Bajo", value: 1.24},
       },
     },
     {
@@ -29,11 +29,11 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
       name: "Flexibilidad de Desarrollo",
       description: "Grado de flexibilidad en el proceso de desarrollo",
       values: {
-        vh: { label: "Muy Alto", value: 5.07, desc: "Objetivos generales" },
-        h: { label: "Alto", value: 4.05, desc: "Objetivos considerables" },
-        n: { label: "Nominal", value: 3.04, desc: "Algunos objetivos" },
-        l: { label: "Bajo", value: 2.03, desc: "Objetivos básicos" },
-        vl: { label: "Muy Bajo", value: 1.01, desc: "Objetivos estrictos" },
+        vh: { label: "Muy Alto", value: 5.07},
+        h: { label: "Alto", value: 4.05},
+        n: { label: "Nominal", value: 3.04},
+        l: { label: "Bajo", value: 2.03},
+        vl: { label: "Muy Bajo", value: 1.01},
       },
     },
     {
@@ -41,11 +41,11 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
       name: "Resolución de Arquitectura/Riesgo",
       description: "Grado de resolución de la arquitectura y riesgos",
       values: {
-        vh: { label: "Muy Alto", value: 7.07, desc: "Completamente resuelto" },
-        h: { label: "Alto", value: 5.65, desc: "Mayormente resuelto" },
-        n: { label: "Nominal", value: 4.24, desc: "Algo resuelto" },
-        l: { label: "Bajo", value: 2.83, desc: "Poco resuelto" },
-        vl: { label: "Muy Bajo", value: 1.41, desc: "Sin resolver" },
+        vh: { label: "Muy Alto", value: 7.07},
+        h: { label: "Alto", value: 5.65},
+        n: { label: "Nominal", value: 4.24},
+        l: { label: "Bajo", value: 2.83},
+        vl: { label: "Muy Bajo", value: 1.41}, 
       },
     },
     {
@@ -53,11 +53,11 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
       name: "Cohesión del Equipo",
       description: "Grado de cooperación entre stakeholders",
       values: {
-        vh: { label: "Muy Alto", value: 5.48, desc: "Interacciones sin problemas" },
-        h: { label: "Alto", value: 4.38, desc: "Cooperación cooperativa" },
-        n: { label: "Nominal", value: 3.29, desc: "Cooperación básica" },
-        l: { label: "Bajo", value: 2.19, desc: "Dificultades ocasionales" },
-        vl: { label: "Muy Bajo", value: 1.1, desc: "Dificultades difíciles" },
+        vh: { label: "Muy Alto", value: 5.48},
+        h: { label: "Alto", value: 4.38},
+        n: { label: "Nominal", value: 3.29},
+        l: { label: "Bajo", value: 2.19},
+        vl: { label: "Muy Bajo", value: 1.1},
       },
     },
     {
@@ -65,11 +65,11 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
       name: "Madurez del Proceso",
       description: "Nivel de madurez del proceso de desarrollo",
       values: {
-        vh: { label: "Muy Alto", value: 7.8, desc: "Nivel 5 - Optimizado" },
-        h: { label: "Alto", value: 6.24, desc: "Nivel 4 - Gestionado" },
-        n: { label: "Nominal", value: 4.68, desc: "Nivel 3 - Definido" },
-        l: { label: "Bajo", value: 3.12, desc: "Nivel 2 - Repetible" },
-        vl: { label: "Muy Bajo", value: 1.56, desc: "Nivel 1 - Inicial" },
+        vh: { label: "Muy Alto", value: 7.8},
+        h: { label: "Alto", value: 6.24},
+        n: { label: "Nominal", value: 4.68},
+        l: { label: "Bajo", value: 3.12},
+        vl: { label: "Muy Bajo", value: 1.56},
       },
     },
   ]
@@ -118,7 +118,7 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
                 <p className="text-xs text-gray-500">{factor.description}</p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                {Object.entries(factor.values).map(([key, data]) => (
+                  {Object.entries(factor.values).map(([key, data]) => (
                   <label
                     key={key}
                     htmlFor={`${factor.id}-${key}`}
@@ -134,17 +134,16 @@ export function ScaleDrivers({ onDriversChange, initialValues = {} }: ScaleDrive
                       onChange={() => handleFactorChange(factor.id, key)}
                       className="peer sr-only"
                     />
-                    <div className="flex flex-col">
+                      <div className="flex flex-col">
                       <span className={`text-sm font-medium ${currentValues[factor.id] === key ? 'text-blue-700' : ''}`}>
                         {data.label}
                       </span>
                       <span className={`text-xs ${currentValues[factor.id] === key ? 'text-blue-600' : 'text-gray-500'}`}>
                         ({data.value})
                       </span>
-                      <span className="text-xs text-gray-400">{data.desc}</span>
-                    </div>
+                      </div>
                   </label>
-                ))}
+                  ))}
               </div>
             </div>
           ))}
